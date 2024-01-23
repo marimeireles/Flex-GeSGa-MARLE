@@ -45,7 +45,6 @@ class PygameVisualizer:
                          (e_x * self.cell_size, e_y * self.cell_size, self.cell_size, self.cell_size))
 
     def run(self, steps):
-        running = True
         while steps > 0:
             # Both agents take random actions
             actions = {agent: self.env.action_space(agent).sample() for agent in self.env.agents}
