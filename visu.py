@@ -6,7 +6,8 @@ import sys
 # Assuming 'Custom-Environment' is the root directory and is located at '/path/to/Custom-Environment'
 sys.path.append('gesga')
 
-from gesga.env.gesga import CustomEnvironment, CustomActionMaskedEnvironment
+from gesga.env.gesga import CustomEnvironment
+# , CustomActionMaskedEnvironment
 
 import pygame
 import numpy as np
@@ -22,6 +23,7 @@ class PygameVisualizer:
             "prisoner": (255, 0, 0),  # Red
             "guard": (0, 0, 255),     # Blue
             "escape": (0, 255, 0),    # Green
+            "resource": (255, 0, 255),    # Purple?
             "background": (255, 255, 255)  # White
         }
 
@@ -36,6 +38,7 @@ class PygameVisualizer:
         p_x, p_y = self.env.prisoner_x, self.env.prisoner_y
         g_x, g_y = self.env.guard_x, self.env.guard_y
         e_x, e_y = self.env.escape_x, self.env.escape_y
+        r_x, r_y = self.env.resource_x, self.env.resource_y
 
         pygame.draw.rect(self.screen, self.colors["prisoner"], 
                          (p_x * self.cell_size, p_y * self.cell_size, self.cell_size, self.cell_size))
@@ -43,6 +46,8 @@ class PygameVisualizer:
                          (g_x * self.cell_size, g_y * self.cell_size, self.cell_size, self.cell_size))
         pygame.draw.rect(self.screen, self.colors["escape"], 
                          (e_x * self.cell_size, e_y * self.cell_size, self.cell_size, self.cell_size))
+        pygame.draw.rect(self.screen, self.colors["resource"], 
+                         (r_x * self.cell_size, r_y * self.cell_size, self.cell_size, self.cell_size))
 
     def run(self, steps):
         while steps > 0:
@@ -72,10 +77,9 @@ class PygameVisualizer:
         return
 
 # Initialize your environment
-env = CustomActionMaskedEnvironment()
+env = CustomEnvironment()
 env.reset()
 
 # Run the visualizer
 visualizer = PygameVisualizer(env)
-visualizer.run(100)
-
+visualizer.run(1000)
