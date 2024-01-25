@@ -1,85 +1,45 @@
-import pygame
-import numpy as np
-import random
+from marlene.agent import Agent
+from marlene.resource import Resource
+from marlene.goal import Goal
+from marlene.marlene import Marlene
+from marlene.graphics import PygameVisualizer
 
-import sys
-# Assuming 'Custom-Environment' is the root directory and is located at '/path/to/Custom-Environment'
-sys.path.append('gesga')
+agents = [Agent(position=(1, 2), name="AgentName", color=(255, 255, 255))]
+resources = [Resource(position=(1, 2), name="AgentName", color=(255, 255, 255))]
+goals = [Goal(position=(1, 2), name="AgentName", color=(255, 255, 255))]
 
-from gesga.env.gesga import CustomEnvironment
-# , CustomActionMaskedEnvironment
+class Jungle(Marlene):
+    def __init__(self):
+        super().__init__()
+        # If agents, resources, and goals are managed by the environment, initialize them here.
+        self.agents = [Agent(position=(1, 2), name="AgentName", color=(255, 255, 255))]
+        self.resources = [Resource(position=(1, 2), name="AgentName", color=(255, 255, 255))]
+        self.goals = [Goal(position=(1, 2), name="AgentName", color=(255, 255, 255))]
+    
+    def reset(self):
+        # Implement the reset logic
+        print("Reset the environment.")
+        self.timestep = 0  # Example of reset logic
 
-import pygame
-import numpy as np
-import random
+    def terminate_game(self):
+        # Implement the logic to terminate the game
+        print("Terminate the game.")
 
-class PygameVisualizer:
-    def __init__(self, env, width=700, height=700):
-        pygame.init()
-        self.env = env
-        self.screen = pygame.display.set_mode((width, height))
-        self.cell_size = width // 7
-        self.colors = {
-            "prisoner": (255, 0, 0),  # Red
-            "guard": (0, 0, 255),     # Blue
-            "escape": (0, 255, 0),    # Green
-            "resource": (255, 0, 255),    # Purple?
-            "background": (255, 255, 255)  # White
-        }
+    def step(self, actions):
+        # Implement the step logic
+        print(f"Actions received: {actions}")
+        # Return mock observations, rewards, dones, truncations, and infos
+        observations = {agent.name: None for agent in self.agents}
+        rewards = {agent.name: 0 for agent in self.agents}
+        dones = {agent.name: False for agent in self.agents}
+        truncations = {agent.name: False for agent in self.agents}  # Add this line
+        infos = {agent.name: {} for agent in self.agents}
+        return observations, rewards, dones, truncations, infos
 
-    def draw_grid(self):
-        self.screen.fill(self.colors["background"])
-        for y in range(7):
-            for x in range(7):
-                rect = pygame.Rect(x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size)
-                pygame.draw.rect(self.screen, (0, 0, 0), rect, 1)
+env = Jungle()
 
-        # Draw the agents
-        p_x, p_y = self.env.prisoner_x, self.env.prisoner_y
-        g_x, g_y = self.env.guard_x, self.env.guard_y
-        e_x, e_y = self.env.escape_x, self.env.escape_y
-        r_x, r_y = self.env.resource_x, self.env.resource_y
+# Create a visualizer instance
+visualizer = PygameVisualizer(env, agents, resources, goals, user_colors=None)
 
-        pygame.draw.rect(self.screen, self.colors["prisoner"], 
-                         (p_x * self.cell_size, p_y * self.cell_size, self.cell_size, self.cell_size))
-        pygame.draw.rect(self.screen, self.colors["guard"], 
-                         (g_x * self.cell_size, g_y * self.cell_size, self.cell_size, self.cell_size))
-        pygame.draw.rect(self.screen, self.colors["escape"], 
-                         (e_x * self.cell_size, e_y * self.cell_size, self.cell_size, self.cell_size))
-        pygame.draw.rect(self.screen, self.colors["resource"], 
-                         (r_x * self.cell_size, r_y * self.cell_size, self.cell_size, self.cell_size))
-
-    def run(self, steps):
-        while steps > 0:
-            # Both agents take random actions
-            actions = {agent: self.env.action_space(agent).sample() for agent in self.env.agents}
-
-            # Step the environment
-            observations, rewards, terminations, truncations, infos = self.env.step(actions)
-
-            # Draw the grid and agents
-            self.draw_grid()
-
-            pygame.display.flip()
-            pygame.time.delay(100)
-
-            steps -= 1
-
-            # Check for termination conditions
-            if any(terminations.values()):
-                if rewards["prisoner"] == 1:
-                    print("Prisoner escaped!")
-                elif rewards["prisoner"] == -1:
-                    print("Prisoner caught by the guard!")
-                return
-
-        print("This game has ended because the specified number of steps was reached.")
-        return
-
-# Initialize your environment
-env = CustomEnvironment()
-env.reset()
-
-# Run the visualizer
-visualizer = PygameVisualizer(env)
-visualizer.run(1000)
+# Call render function with some steps and actions (assuming actions are predefined)
+env.render(steps=50, actions=None, visualizer=visualizer, env=env)
